@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Lumino - Dashboard</title>
+	<link href="../../css/bootstrap.min.css" rel="stylesheet">
+	<link href="../../css/font-awesome.min.css" rel="stylesheet">
+	<link href="../../css/datepicker3.css" rel="stylesheet">
+	<link href="../../css/styles.css" rel="stylesheet">
+	
+	    <!-- jquery cdn -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="js/html5shiv.js"></script>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+<?php
+		   include_once "../connessione.php";
+		   
+?>
+	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<?php
+		
+		   include "../../common/nav_header.php";
+		?>		
+		
+		
+	</nav>
+		<?php
+		   include "../../common/nav_left.php";
+		?>			
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">modello</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Modifica Dati</h1>
+			</div>
+		</div><!--/.row-->
+		
+		<div class="panel panel-container">
+			
+				
+		</div><!--/container-->	
+		<?php
+		
+		if (!empty($_GET["user"])) {
+				$query = "SELECT * FROM terapia_chirurgica WHERE Codice_Chirurgia=$_GET[user];";
+				//echo $query;
+				// $query = mysqli_query($con, $qr);
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+						$Codice_Chirurgia=$row['Codice_Chirurgia'];
+						$Codice_Terapia=$row['Codice_Terapia'];
+						$Data_Compilazione=$row['Data_Compilazione'];
+						$Descrizione=$row['Descrizione'];
+						$Stato=$row['Stato'];
+						$Codice_Operatore=$row['Cod_Operatore'];
+						$Data_Intervento=$row['Data_intervento'];
+						$Durata_intervento=$row['Durata_intervento'];
+                        $Esito_Operazione=$row['Esito_Operazione'];
+						$Note=$row['Note'];
+					}
+					
+				
+				}
+				//
+		}				
+		else
+			
+		{
+			
+			$Codice_Chirurgia=0;
+			$Codice_Terapia=0;
+			$Data_Compilazione="";
+			$Descrizione="";
+			$Stato=0;
+			$Codice_Operatore=0;
+			$Data_Intervento="";
+			$Durata_intervento=0;
+            $Esito_Operazione=0;
+			$Note="";
+		}
+		
+		
+		
+		
+		?>
+		
+		
+		<form name="Chirurgica" id="Chirurgica" action="invioDatiChirurgica.php" method="post" onsubmit="return controllo()" enctype="multipart/form-data"> 
+		<?php
+		if (!empty($_GET["user"])) {
+			echo "<input name='cod_diagnosi' id='cod_diagnosi' type='hidden' value='$Codice_Diagnosi'>";
+		}
+?>		
+			
+            <div class="form-group">
+			<label for="Terapia">Terapia</label>
+			<select class="form-control2" id="diagnosi" name="diagnosi">
+			<option value=""> Seleziona la Terapia</option>
+		<?php
+		
+				$query = "SELECT Codice_Terapia FROM terapia;";
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+									
+			?>
+					<option value="<?php echo $row['Codice_Terapia']; ?>"> <?php echo $row['Codice_Terapia'];?></option>
+			<?php
+					}
+				}
+			?>
+			</select>
+		</div>				
+		
+		
+		<div>
+			<label for="DataCompilazione">Data Compilazione</label>
+			<input name="DataCompilazione" id="DataCompilazione" type="date" value="<?php echo $Data_Compilazione; ?>">
+        </div>
+
+
+		<!-- Veterinario -->
+		<div class="form-group">
+			<label for="veterinario">Veterinario Operante</label>
+			<select class="form-control2" id="veterinario" name="veterinario">
+				<option value=""> Seleziona l'Operatore</option>
+			<?php
+		
+				$query = "SELECT Codice_Utente,Cognome, Nome FROM utenti WHERE Codice_Ruolo = 1;";
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+
+			?>
+					<option value="<?php echo $row['Codice_Utente']; ?>" <?php if(!empty($_GET["user"]) && $row['Codice_Utente']==$Codice_Operatore) echo 'selected'; ?> ><?php echo  $row['Nome']; echo " "; echo $row['Cognome']; ?></option>
+			<?php
+					}
+				}
+			?>
+			</select>
+		</div>	
+
+		
+        <label for="Descrizione">Descrizione</label>
+        <input name="Descrizione" id="Descrizione" type="text" value="<?php echo $Descrizione; ?>">
+       	<br>
+
+        <label for="descrizione">Data Intervento</label>
+		<input name="DataIntervento" id="DataIntervento" type="date" value="<?php echo $Data_Intervento; ?>">
+        <br>
+
+        <label for="Durata">Durata Intervento</label>
+		<input name="DurataIntervento" id="DurataIntervento" type="time" value="<?php echo $Durata_intervento; ?>">
+		<br>
+
+        <label for="Esito">Esito Operazione</label>
+		<input name="EsitoOperazione" id="EsitoOperazione" type="text" value="<?php echo $Esito_Operazione; ?>">
+        <br>
+
+        <label for="Note">Note</label>
+        <input name="Note" id="Note" type="text" value="<?php echo $Note; ?>">
+
+
+        <!-- Veterinario -->
+		<div class="form-group">
+			<label for="Stato">Stato Operazione</label>
+			<select class="form-control2" id="stato" name="stato">
+				<option value=""> Seleziona lo stato</option>
+			
+                <option value="0"> 0 - Non eseguita</option>
+
+                <option value="1"> 1 - Eseguite</option>
+
+			</select>
+		</div>	
+
+
+
+
+        <br>
+	   	<!-- Bottone regitra -->
+		<input type="submit" class="btn btn-primary" value="Registra">	
+		</form>
+		
+		<?php
+		   
+		   include "../../common/footer.php";
+		?>	
+				
+			
+		
+	</div>	<!--/.main-->
+	
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap.min.js"></script>
+	<script src="../../js/chart.min.js"></script>
+	<script src="../../js/chart-data.js"></script>
+	<script src="../../js/easypiechart.js"></script>
+	<script src="../../js/easypiechart-data.js"></script>
+	<script src="../../js/bootstrap-datepicker.js"></script>
+	<script src="../../js/custom.js"></script>
+	<script>
+		window.onload = function () {
+	var chart1 = document.getElementById("line-chart").getContext("2d");
+	window.myLine = new Chart(chart1).Line(lineChartData, {
+	responsive: true,
+	scaleLineColor: "rgba(0,0,0,.2)",
+	scaleGridLineColor: "rgba(0,0,0,.05)",
+	scaleFontColor: "#c5c7cc"
+	});
+};
+	</script>
+    <script>
+        $(document).ready(function() {
+
+            $("#regione").on('change', function() {
+                var regione = $(this).val();
+			
+                $.ajax({
+                    method: "POST",
+                    url: "response.php",
+                    data: {
+                        id: regione
+						
+                    },
+                    datatype: "html",
+                    success: function(data) {
+                        $("#provincia").html(data);
+                        $("#comune").html('<option value="">Seleziona Comune</option>');
+
+                    }
+                });
+            });
+			
+            $("#provincia").on('change', function() {
+                var provinciaid = $(this).val();
+                $.ajax({
+                    method: "POST",
+                    url: "response.php",
+                    data: {
+                        sid: provinciaid
+                    },
+                    datatype: "html",
+                    success: function(data) {
+                        $("#comune").html(data);
+
+                    }
+
+                });
+            });
+        
+		
+		});
+    </script>	
+</body>
+</html>

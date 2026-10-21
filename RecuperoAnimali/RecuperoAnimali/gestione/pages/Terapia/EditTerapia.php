@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Lumino - Dashboard</title>
+	<link href="../../css/bootstrap.min.css" rel="stylesheet">
+	<link href="../../css/font-awesome.min.css" rel="stylesheet">
+	<link href="../../css/datepicker3.css" rel="stylesheet">
+	<link href="../../css/styles.css" rel="stylesheet">
+	
+	    <!-- jquery cdn -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="js/html5shiv.js"></script>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+<?php
+		   include_once "../connessione.php";
+		   
+?>
+	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<?php
+		
+		   include "../../common/nav_header.php";
+		?>		
+		
+		
+	</nav>
+		<?php
+		   include "../../common/nav_left.php";
+		?>			
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">modello</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Modifica Dati</h1>
+			</div>
+		</div><!--/.row-->
+		
+		<div class="panel panel-container">
+			
+				
+		</div><!--/container-->	
+		<?php
+		
+		if (!empty($_GET["user"])) {
+				$query = "SELECT * FROM utenti WHERE Codice_Utente=$_GET[user];";
+				//echo $query;
+				// $query = mysqli_query($con, $qr);
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+						$Codice_Utente=$row['Codice_Utente'];
+						$Cognome=$row['Cognome'];
+						$Nome=$row['Nome'];
+						$Codice_comune=$row['Codice_comune'];
+						$Indirizzo=$row['Indirizzo'];
+						$Telefono=$row['Telefono'];
+						$Email=$row['Email'];
+						$User=$row['User'];
+						$Codice_Ruolo=$row['Codice_Ruolo'];
+						$Codice_Centro=$row['Codice_Centro'];
+					}
+					
+					$query = "SELECT Comune, Regione, SiglaPR FROM regprovcomune WHERE Codice_comune='$Codice_comune';";
+					$result = $con->query($query);
+					
+					if ($result->num_rows > 0) {
+						while ($row = mysqli_fetch_assoc($result)) {
+							$Comune= $row['Comune'];
+							$Regione=$row['Regione'];
+							$SiglaPR=$row['SiglaPR'];							
+						}
+						
+					}
+				}
+				//
+		}				
+		else
+			
+		{
+			$Codice_Utente=0;;
+			$Cognome="";
+			$Nome="";
+			$Codice_comune="";
+			$Indirizzo="";
+			$Telefono="";
+			$Email="";
+			$User="";
+			$Codice_Ruolo=0;
+			$Codice_Centro=0;				
+		}
+		
+		
+		
+		
+		?>
+		
+		
+		<form name="registrazioneForm" id="registrazioneForm" action="invioDati.php" method="post" onsubmit="return controllo()" enctype="multipart/form-data"> 
+		<?php
+		if (!empty($_GET["user"])) {
+			echo "<input name='cod_terapia' id='cod_terapia' type='hidden' value='$Codice_Terapia'>";
+		}
+?>		
+				
+				
+				<!-- Descrizione -->
+                <div class="form-group">
+                    <label for="descrizione">Descrizione*</label>
+                    <input name="descrizione" id="descrizione" type="text">
+                
+				<!-- Data compilazione -->
+                
+                    <label for="dataComp">Data compilazione*</label>
+                    <input name="dataComp" id="dataComp" type="text">
+                </div>
+
+
+		<!-- Scheda -->
+		<div class="form-group">
+			<label for="diagnosi">Diagnosi</label>
+			<select class="form-control2" id="diagnosi" name="diagnosi">
+				<?php
+		
+					$query = "SELECT DISTINCT Codice_Diagnosi FROM terapia;";
+					$result = $con->query($query);
+					if ($result->num_rows > 0) {
+						while ($row = mysqli_fetch_assoc($result)) {
+
+					?>
+						<option value="<?php echo $row['Codice_Diagnosi']; ?>"><?php echo $row['Codice_Diagnosi']; ?></option>
+					<?php
+						}
+					}
+				?>
+	
+
+        </select>
+		
+		<select>
+		
+		<label for="tipologia">Tipologia Terapia</label>
+			<select class="form-control2" id="tipologiaTerapia" name="tipologiaTerapia">
+
+				<?php
+		
+					$query = "SELECT DISTINCT Cod_Tipologia_Terapia FROM terapia;";
+					$result = $con->query($query);
+					if ($result->num_rows > 0) {
+						while ($row = mysqli_fetch_assoc($result)) {
+
+					?>
+						<option value="<?php echo $row['Cod_Tipologia_Terapia']; ?>"><?php echo $row['Cod_Tipologia_Terapia']; ?></option>
+					<?php
+						}
+					}
+				?>
+	
+
+        </select>
+		
+		<select>
+		
+		<label for="operatore"> Operatore</label>
+			<select class="form-control2" id="operatore" name="operatore">
+
+				<?php
+		
+					$query = "SELECT DISTINCT Codice_Operatore FROM terapia;";
+					$result = $con->query($query);
+					if ($result->num_rows > 0) {
+						while ($row = mysqli_fetch_assoc($result)) {
+
+					?>
+						<option value="<?php echo $row['Codice_Operatore']; ?>"><?php echo $row['Codice_Operatore']; ?></option>
+					<?php
+						}
+					}
+				?>
+	
+
+        </select>
+		
+	
+		<label for="provincia"> Provincia</label>
+        <select class="form-control2" id="provincia" name="provincia">
+            <option value="">Seleziona Provicia</option>
+				<?php
+					if(!empty($_GET["user"]))
+					{
+						$query = "SELECT SiglaPR, Provincia FROM regprovcomune WHERE Regione='$Regione' ORDER BY 1 ASC;";
+						echo $query;
+						$result = $con->query($query);
+						if ($result->num_rows > 0) {
+							while ($row = mysqli_fetch_assoc($result)) {
+
+						?>
+						<option value="<?php echo $row['SiglaPR']; ?>" <?php if($row['SiglaPR']==$SiglaPR) echo 'selected'; ?>><?php echo $row['Provincia']; ?></option>
+						<?php
+							}
+						}
+					}
+				?>			
+			
+
+        </select>
+		
+		<label for="comune"> Comune</label>
+        <select class="form-control2" id="comune" name="comune">
+            <option value="">Seleziona Comune</option>
+	<?php
+					if(!empty($_GET["user"]))
+					{
+						$query = "SELECT Codice_comune, Comune FROM regprovcomune WHERE SiglaPR='$SiglaPR' ORDER BY 1 ASC;";
+						echo $query;
+						$result = $con->query($query);
+						if ($result->num_rows > 0) {
+							while ($row = mysqli_fetch_assoc($result)) {
+
+						?>
+						<option value="<?php echo $row['Codice_comune']; ?>" <?php if($row['Codice_comune']==$Codice_comune) echo 'selected'; ?>><?php echo $row['Comune']; ?></option>
+						<?php
+							}
+						}
+					}
+				?>				
+			
+			
+			
+			
+			
+        </select>
+		
+        <!-- Indirizzo -->
+        
+           <label for="indirizzo">Indirizzo</label>
+           <input name="indirizzo" id="indirizzo" type="text" value="<?php echo $Indirizzo; ?>">
+       		
+	</div>
+		
+        <!-- Telefono -->
+        <div class="form-group">
+           <label for="telefono">Telefono</label>
+           <input name="telefono" id="telefono" type="text" value="<?php echo $Telefono; ?>">
+        		
+		
+		<!-- Email -->
+        
+           <label for="email">Email</label>
+           <input name="email" id="email" type="text" value="<?php echo $Email; ?>">
+        </div>	
+		<!-- User -->
+        <div class="form-group">
+           <label for="user">User</label>
+           <input name="user" id="user" type="text" value="<?php echo $User; ?>">
+        
+		<!-- Password -->
+		<?php
+			if(empty($_GET["user"]))
+			{
+		   	   echo "<label for='password'>Password</label>";
+			   echo "<input name='password' id='password' type='password'>";
+			}
+		?>
+        </div>	
+		<!-- Ruolo -->
+		<div class="form-group">
+			<label for="ruolo"> Ruolo</label>
+			<select class="form-control2" id="ruolo" name="ruolo">
+				<option value=""> Seleziona il ruolo dell'utente</option>
+				<?php
+
+				$query = "SELECT *  FROM tipologia_ruolo;";
+				// $query = mysqli_query($con, $qr);
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+
+				?>
+                    <option value="<?php echo $row['Codice_Ruolo'];  ?>" <?php if($row['Codice_Ruolo']==$Codice_Ruolo) echo 'selected' ?>><?php echo $row['Denominazione']; ?></option>
+				<?php
+					}
+				}
+
+				?>
+
+        </select>
+		<!-- Centro di recupero -->
+				<label for="centro"> Centro di Recupero dove l'utente è impiegato</label>
+			<select class="form-control2" id="centro" name="centro">
+				<option value=""> Seleziona il Centro</option>
+				<?php
+
+				$query = "SELECT Codice_Centro, Denominazione  FROM anagrafica_centro;";
+				// $query = mysqli_query($con, $qr);
+				$result = $con->query($query);
+				if ($result->num_rows > 0) {
+					while ($row = mysqli_fetch_assoc($result)) {
+
+				?>
+                    <option value="<?php echo $row['Codice_Centro']; ?>" <?php if($row['Codice_Centro']==$Codice_Centro) echo 'selected' ?>><?php echo $row['Denominazione']; ?></option>
+				<?php
+					}
+				}
+
+				?>
+
+        </select>
+		</div>	
+		<input type="submit" class="btn btn-primary" value="Registra">	
+		</form>
+		
+		<?php
+		   
+		   include "../../common/footer.php";
+		?>	
+				
+			
+		
+	</div>	<!--/.main-->
+	
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap.min.js"></script>
+	<script src="../../js/chart.min.js"></script>
+	<script src="../../js/chart-data.js"></script>
+	<script src="../../js/easypiechart.js"></script>
+	<script src="../../js/easypiechart-data.js"></script>
+	<script src="../../js/bootstrap-datepicker.js"></script>
+	<script src="../../js/custom.js"></script>
+	<script>
+		window.onload = function () {
+	var chart1 = document.getElementById("line-chart").getContext("2d");
+	window.myLine = new Chart(chart1).Line(lineChartData, {
+	responsive: true,
+	scaleLineColor: "rgba(0,0,0,.2)",
+	scaleGridLineColor: "rgba(0,0,0,.05)",
+	scaleFontColor: "#c5c7cc"
+	});
+};
+	</script>
+    <script>
+        $(document).ready(function() {
+
+            $("#regione").on('change', function() {
+                var regione = $(this).val();
+			
+                $.ajax({
+                    method: "POST",
+                    url: "response.php",
+                    data: {
+                        id: regione
+						
+                    },
+                    datatype: "html",
+                    success: function(data) {
+                        $("#provincia").html(data);
+                        $("#comune").html('<option value="">Seleziona Comune</option>');
+
+                    }
+                });
+            });
+			
+            $("#provincia").on('change', function() {
+                var provinciaid = $(this).val();
+                $.ajax({
+                    method: "POST",
+                    url: "response.php",
+                    data: {
+                        sid: provinciaid
+                    },
+                    datatype: "html",
+                    success: function(data) {
+                        $("#comune").html(data);
+
+                    }
+
+                });
+            });
+        
+		
+		});
+    </script>	
+</body>
+</html>
